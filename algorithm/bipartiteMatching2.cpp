@@ -31,35 +31,40 @@ void init(int n, int m) {
 
 int dfsJob(int targetJob, int oldOne, int newOne, int newOneIndex) {
 
-	if (checkPerson[oldOne] == 2 || checkVisited[oldOne] == 1) return -1;
+	if (checkVisited[oldOne] == 1) return -1;
+	checkVisited[oldOne] = 1;
 
 	for (int i = 0; i < jobTable[oldOne].size(); i++) {
 		if (checkJob[jobTable[oldOne][i]] == 0) {
 			checkJob[jobTable[oldOne][i]] = oldOne;
-			checkPerson[oldOne]++;
+			if(checkPerson[oldOne] <= 1) checkPerson[oldOne]++;
+
 			checkJob[targetJob] = newOne;
-			checkPerson[newOne]++;
+			if (checkPerson[newOne] <= 1) checkPerson[newOne]++;
 
 			solutionCount++;
-			
-			if (checkPerson[newOne] == 2 || checkPerson[oldOne] == 2) return 1;
+
+			return 1;
 		}
 	}
 
 	for (int i = 0; i < jobTable[oldOne].size(); i++) {
 		
-		if (checkPerson[jobTable[oldOne][i]] != 2 || checkVisited[jobTable[oldOne][i]] != 1) {
-			if (dfsJob(jobTable[oldOne][i], checkJob[jobTable[oldOne][i]], oldOne, i) == 1) {
-				checkJob[targetJob] = newOne;
-				checkPerson[newOne]++;
+		if (dfsJob(jobTable[oldOne][i], checkJob[jobTable[oldOne][i]], oldOne, i) == 1) {
+			checkJob[targetJob] = newOne;
+			if (checkPerson[newOne] <= 1) checkPerson[newOne]++;
 
-				if (checkPerson[newOne] == 2 || checkPerson[oldOne] == 2) return 1;
-			}
-
+			return 1;
 		}
-		
 	}
 	
+}
+
+void initVisited(int n) {
+
+	for (int k = 1; k <= n; k++) {
+		checkVisited[k] = 0;
+	}
 }
 
 int main() {
@@ -72,11 +77,9 @@ int main() {
 
 	for (int i = 1; i <= n; i++) {		
 		
-		for (int j = 1; j <= n; j++) {
-			checkVisited[j] = 0;
-		}
-
 		for (int j = 0; j < jobTable[i].size(); j++) {
+
+			initVisited(n);
 
 			if (checkJob[jobTable[i][j]] == 0) {
 				checkJob[jobTable[i][j]] = i;
@@ -87,17 +90,12 @@ int main() {
 				if (checkPerson[i] == 2) break;
 			}
 			else {
-				if (checkVisited[checkJob[jobTable[i][j]]] == 0 && checkPerson[checkJob[jobTable[i][j]]] != 2) {
-					checkVisited[checkJob[jobTable[i][j]]] = 1;
 					
-					if (dfsJob(jobTable[i][j], checkJob[jobTable[i][j]], i, j) == 1) {
+				if (dfsJob(jobTable[i][j], checkJob[jobTable[i][j]], i, j) == 1) {
 
-						if (checkPerson[i] == 2) break;
-					}
-					else {
-
-					}
+					if (checkPerson[i] >= 2) break;
 				}
+
 			}
 		}
 	}	
