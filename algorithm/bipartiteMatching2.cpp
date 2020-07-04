@@ -1,32 +1,27 @@
 #include <stdio.h>
-#include <vector>
-using namespace std;
 
-vector <vector <int>> jobTable;
-int checkPerson[1010];
-int checkJob[1010];
-int checkVisited[1010];
+int jobTable[1010][1010];
+int checkJob[1010], checkPerson[1010];
 int solutionCount;
+
+int checkVisited[1010];
+
+void initCheckVisited(int n) {
+
+	for (int i = 1; i <= n; i++) {
+		checkVisited[i] = 0;
+	}
+}
 
 void init(int n, int m) {
 
-	vector<int> deleteZero;
-	jobTable.push_back(deleteZero);
-
-	int jobNum;
 	for (int i = 1; i <= n; i++) {
-		
-		scanf("%d", &jobNum);
+		scanf("%d", &jobTable[i][0]);
 
-		int jobInput;
-		vector<int> rowInput;
-		for (int j = 0; j < jobNum; j++) {
-			scanf("%d", &jobInput);
-			rowInput.push_back(jobInput);
+		for (int j = 1; j <= jobTable[i][0]; j++) {
+			scanf("%d", &jobTable[i][j]);
 		}
-		jobTable.push_back(rowInput);
 	}
-
 }
 
 int dfsJob(int targetJob, int oldOne, int newOne, int newOneIndex) {
@@ -34,71 +29,73 @@ int dfsJob(int targetJob, int oldOne, int newOne, int newOneIndex) {
 	if (checkVisited[oldOne] == 1) return -1;
 	checkVisited[oldOne] = 1;
 
-	for (int i = 0; i < jobTable[oldOne].size(); i++) {
-		if (checkJob[jobTable[oldOne][i]] == 0) {
-			checkJob[jobTable[oldOne][i]] = oldOne;
-			if(checkPerson[oldOne] <= 1) checkPerson[oldOne]++;
+	for (int j = 1; j <= jobTable[oldOne][0]; j++) {
 
-			checkJob[targetJob] = newOne;
-			if (checkPerson[newOne] <= 1) checkPerson[newOne]++;
-
+		int currentJob = jobTable[oldOne][j];
+	
+		if (checkJob[currentJob] == 0) {
+			checkJob[currentJob] = oldOne;
 			solutionCount++;
 
 			return 1;
 		}
 	}
 
-	for (int i = 0; i < jobTable[oldOne].size(); i++) {
-		
-		if (dfsJob(jobTable[oldOne][i], checkJob[jobTable[oldOne][i]], oldOne, i) == 1) {
-			checkJob[targetJob] = newOne;
-			if (checkPerson[newOne] <= 1) checkPerson[newOne]++;
+	for (int j = 1; j <= jobTable[oldOne][0]; j++) {
+
+		int currentJob = jobTable[oldOne][j];
+		if (currentJob == targetJob) continue;
+
+		if (dfsJob(currentJob, checkJob[currentJob], oldOne, j) == 1) {
+			checkJob[currentJob] = oldOne;
 
 			return 1;
 		}
 	}
-	
-}
 
-void initVisited(int n) {
-
-	for (int k = 1; k <= n; k++) {
-		checkVisited[k] = 0;
-	}
 }
 
 int main() {
 
 	int n, m;
 	scanf("%d %d", &n, &m);
-	
+
 	init(n, m);
 
-
-	for (int i = 1; i <= n; i++) {		
+	for (int i = 1; i <= n; i++) {
 		
-		for (int j = 0; j < jobTable[i].size(); j++) {
+		for (int j = 1; j <= jobTable[i][0]; j++) {
 
-			initVisited(n);
+			initCheckVisited(n);
 
-			if (checkJob[jobTable[i][j]] == 0) {
-				checkJob[jobTable[i][j]] = i;
+			int currentJob = jobTable[i][j];
+			if (checkJob[currentJob] == 0) {
+				checkJob[currentJob] = i;
 				checkPerson[i]++;
 
 				solutionCount++;
 
-				if (checkPerson[i] == 2) break;
+				if (checkPerson[i] >= 2) break;
 			}
-			else {
-					
-				if (dfsJob(jobTable[i][j], checkJob[jobTable[i][j]], i, j) == 1) {
+
+		}
+
+		if (checkPerson[i] < 2 && jobTable[i][0] >= 2) {
+
+			for (int j = 1; j <= jobTable[i][0]; j++) {
+
+				int currentJob = jobTable[i][j];
+				if (dfsJob(currentJob, checkJob[currentJob], i, j) == 1) {
+					checkJob[currentJob] = i;
+					checkPerson[i]++;
 
 					if (checkPerson[i] >= 2) break;
 				}
-
 			}
+
 		}
-	}	
+	}
+
 	printf("%d", solutionCount);
 
 }
