@@ -23,3 +23,5 @@ int main() {
 	printf("%d", min);
 
 }
+
+//bj 5543
