@@ -99,5 +99,3 @@ int main() {
 	printf("%d", solutionCount);
 
 }
-
-//bj 11376
