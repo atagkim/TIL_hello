@@ -1,42 +1,58 @@
 #include <stdio.h>
+#include <queue>
 #pragma warning(disable:4996)
 
+using namespace std;
+
+
+typedef struct stt {
+	int location;
+	int length;
+};
+
 int table[100010];
+queue<stt> qqu;
 
-void init(int n) {
+void bfs(int target) {
 
-	table[n] = 0;
-	for (int i = n + 1; i <= 100000; i++) {
-		table[i] = i - n;
-	}
-	for (int i = n - 1; i >= 0; i--) {
-		table[i] = n - i;
-	}
-}
+	while (!qqu.empty()) {
 
-int dfs(int current, int target, int length) {
+		stt current = qqu.front();
+		qqu.pop();
 
+		if (current.location < 0 || current.location > 100000) continue;
 
-	if (current < 0 || current > 100000) return -1;
+		if (table[current.location] != 0) continue;
+		table[current.location] = 1;
 
-	if (table[current] <= length) return -1;
-	table[current] = length;
+		if (current.location == target) {
+			printf("%d", current.length);
+			break;
+		}
 
-	if (current == target) return 1;
+		if (current.location * 2 <= 100000 && table[current.location * 2] == 0) {
+			stt next;
+			next.location = current.location * 2;
+			next.length = current.length + 1;
+			
+			qqu.push(next);
+		}
 
-	if (table[target] <= length) {
-		printf("fewfwef');\n");
-		return -1;
-	}
+		if (current.location - 1 >= 0 && table[current.location - 1] == 0) {
+			stt next;
+			next.location = current.location - 1;
+			next.length = current.length + 1;
 
+			qqu.push(next);
+		}
 
-	if (current > target) {
-		if (current - 1 >= 0 && table[current - 1] > length + 1) dfs(current - 1, target, length + 1);
-	}
-	else {
-		if (current + 1 <= 100000 && table[current + 1] > length + 1) dfs(current + 1, target, length + 1);
-		if (current - 1 >= 0 && table[current - 1] > length + 1) dfs(current - 1, target, length + 1);
-		if (current * 2 <= 100000 && table[current * 2] > length + 1) dfs(current * 2, target, length + 1);
+		if (current.location + 1 <= 100000 && table[current.location + 1] == 0) {
+			stt next;
+			next.location = current.location + 1;
+			next.length = current.length + 1;
+
+			qqu.push(next);
+		}
 	}
 }
 
@@ -45,12 +61,12 @@ int main() {
 	int n, m;
 	scanf("%d %d", &n, &m);
 
-	init(n);
+	stt start;
+	start.length = 0;
+	start.location = n;
 
+	qqu.push(start);
 	
-	if (n + 1 <= 100000 && table[n + 1] > 1) dfs(n + 1, m, 1);
-	if (n - 1 >= 0 && table[n - 1] > 1) dfs(n - 1, m, 1);
-	if (n * 2 <= 100000 && table[n * 2] > 1) dfs(n * 2, m, 1);
-
-	printf("%d", table[m]);
+	bfs(m);
 }
+
