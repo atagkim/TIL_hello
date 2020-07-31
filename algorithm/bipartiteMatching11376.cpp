@@ -13,6 +13,7 @@ void initCheckVisited(int n) {
 	}
 }
 
+
 void init(int n, int m) {
 
 	for (int i = 1; i <= n; i++) {
