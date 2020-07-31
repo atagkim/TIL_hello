@@ -9,7 +9,7 @@ typedef struct stt {
 	int colum;
 	int status;
 	int length;
-};
+}; 
 
 queue<stt> qqu;
 
