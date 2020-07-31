@@ -56,7 +56,6 @@ void bfs(int n, int m) {
 			
 			if (next.row >= 1 && next.row <= n && next.colum >= 1 && next.colum <= m) {
 				if (current.status == 1 
-					&& visited[next.row][next.colum][0] == 0 
 					&& visited[next.row][next.colum][1] == 0 
 					&& table[next.row][next.colum] == '0') {
 					visited[next.row][next.colum][1] = 1;
@@ -71,8 +70,7 @@ void bfs(int n, int m) {
 						qqu.push(next);
 					}
 					else if(table[next.row][next.colum] == '1' 
-						&& visited[next.row][next.colum][1] == 0
-						&& visited[next.row][next.colum][0] == 0){
+						&& visited[next.row][next.colum][1] == 0){
 						visited[next.row][next.colum][1] = 1;
 						
 						next.status = 1;
