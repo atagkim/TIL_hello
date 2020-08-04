@@ -31,10 +31,11 @@ priority_queue<pqUnit, vector<pqUnit>, cmp> pq;
 
 vector<vector<unit>> edgeTable;
 
-int distTable[110];
-bool checkList[110];
+int solution;
 
 void init(int vertex, int totalCost, int edge) {
+
+	solution = 987654321;
 
 	vector<unit> basis;
 	for (int i = 0; i <= vertex; i++) {
@@ -54,33 +55,32 @@ void init(int vertex, int totalCost, int edge) {
 		edgeTable[start].push_back(input);
 	}
 
-	distTable[1] = 0;
-	for (int i = 2; i <= vertex; i++) {
-		distTable[i] = 987654321;
-	}
-
 }
 
-void findPath(int vertex, int totalCost, int edge) {
+void findPath(int start, int end, int totalCost, int currentCost, int currentValue) {
 
-	pqUnit start;
-	start.start = 1;
-	start.value = 0;
-	start.cost = 0;
-
-	pq.push(start);
-
-	while (!pq.empty()) {
-
-		pqUnit current = pq.top();
-		pq.pop();
-
-		if (checkList[current.start] == 1) continue;
-		checkList[current.start] = 0;
-
-
-
+	if (start == end) {
+		if (currentValue < solution) {
+			solution = currentValue;
+		}
+		return;
 	}
+
+	for (int i = 0; i < edgeTable[start].size(); i++) {
+
+		if (edgeTable[start][i].cost + currentCost <= totalCost) {
+			findPath(edgeTable[start][i].end, end, totalCost,
+				edgeTable[start][i].cost + currentCost, edgeTable[start][i].value + currentValue);
+		}
+	}
+}
+
+void free(int vertex) {
+
+	for (int i = 0; i <= vertex; i++) {
+		edgeTable[i].clear();
+	}
+
 
 }
 
@@ -97,8 +97,16 @@ int main() {
 
 		init(vertex, totalCost, edge);
 
-		findPath(vertex, totalCost, edge);
+		findPath(1, vertex, totalCost, 0, 0);
 
+		if (solution == 987654321) {
+			printf("Poor KCM\n");
+		}
+		else {
+			printf("%d\n", solution);
+		}
+
+		free(vertex);
 	}
 
 }
