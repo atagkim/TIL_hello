@@ -1,86 +1,122 @@
 #include <stdio.h>
 #include <queue>
 #pragma warning(disable:4996)
-
 using namespace std;
 
-struct unit {
+struct edgeUnit {
 	int start;
 	int end;
 	int cost;
-	int value;
+	int dist;
 };
 
 struct pqUnit {
-	int start;
+	int node;
+	int dist;
 	int cost;
-	int value;
 };
 
 struct cmp {
-	bool operator()(pqUnit A, pqUnit B) {
-		if (A.value == B.value) {
-			return A.cost > B.cost;
-		}
-		else return A.value > B.value;
+
+	bool operator()(pqUnit a, pqUnit b) {
+		return a.dist > b.dist;
 	}
 };
 
-
 priority_queue<pqUnit, vector<pqUnit>, cmp> pq;
 
-vector<vector<unit>> edgeTable;
+vector<vector<edgeUnit>> edgeTable;
 
-int solution;
+bool checkList[110][10010];
+int distPerCostTable[110][10010];
 
-void init(int vertex, int totalCost, int edge) {
+void init(int n, int m, int k) {
 
-	solution = 987654321;
-
-	vector<unit> basis;
-	for (int i = 0; i <= vertex; i++) {
-		edgeTable.push_back(basis);
+	vector<edgeUnit> buf;
+	for (int i = 0; i <= n; i++) {
+		edgeTable.push_back(buf);
 	}
 
-	int start, end, cost, value;
-	for (int i = 1; i <= edge; i++) {
-		scanf("%d %d %d %d", &start, &end, &cost, &value);
-		
-		unit input;
-		input.start = start;
-		input.end = end;
-		input.cost = cost;
-		input.value = value;
+	edgeUnit input;
+	for (int i = 1; i <= k; i++) {
+		scanf("%d %d %d %d", &input.start, &input.end, &input.cost, &input.dist);
 
-		edgeTable[start].push_back(input);
+		edgeTable[input.start].push_back(input);
 	}
-
-}
-
-void findPath(int start, int end, int totalCost, int currentCost, int currentValue) {
-
-	if (start == end) {
-		if (currentValue < solution) {
-			solution = currentValue;
-		}
-		return;
-	}
-
-	for (int i = 0; i < edgeTable[start].size(); i++) {
-
-		if (edgeTable[start][i].cost + currentCost <= totalCost) {
-			findPath(edgeTable[start][i].end, end, totalCost,
-				edgeTable[start][i].cost + currentCost, edgeTable[start][i].value + currentValue);
+	
+	for (int i = 1; i <= n; i++) {
+		for (int j = 1; j <= m; j++) {
+			checkList[i][j] = 0;
 		}
 	}
+
+	for (int i = 2; i <= n; i++) {
+		for (int j = 1; j <= 10000; j++) {
+			distPerCostTable[i][j] = 987654321;
+		}
+	}
+	
 }
 
-void free(int vertex) {
 
-	for (int i = 0; i <= vertex; i++) {
+void free(int n, int m, int k) {
+
+	for (int i = 0; i <= n; i++) {
 		edgeTable[i].clear();
 	}
+	edgeTable.clear();
 
+	while (!pq.empty()) {
+		pq.pop();
+	}
+
+}
+
+void findPath(int n, int totalCost, int destination) {
+
+	pqUnit start;
+	start.node = 1;
+	start.cost = 0;
+	start.dist = 0;
+	
+	pq.push(start);
+
+	while (!pq.empty()) {
+
+		pqUnit current = pq.top();
+		pq.pop();
+
+		if (checkList[current.node][current.cost] == 1) continue;
+		checkList[current.node][current.cost] = 1;
+
+		for (int i = 0; i < edgeTable[current.node].size(); i++) {
+			edgeUnit currentEdge = edgeTable[current.node][i];
+
+			if (currentEdge.cost + current.cost > totalCost) continue;
+
+			if (current.dist + currentEdge.dist < distPerCostTable[currentEdge.end][current.cost + currentEdge.cost]) {
+				distPerCostTable[currentEdge.end][current.cost + currentEdge.cost] = current.dist + currentEdge.dist;
+
+				pqUnit next;
+				next.node = currentEdge.end;
+				next.dist = current.dist + currentEdge.dist;
+				next.cost = current.cost + currentEdge.cost;
+
+				pq.push(next);
+			}
+
+		}
+
+	}
+
+	for (int i = 1; i <= totalCost; i++) {
+		if (distPerCostTable[destination][i] != 987654321) {
+			printf("%d\n", distPerCostTable[destination][i]);
+			break;
+		}
+
+		if (i == totalCost) printf("Poor KCM\n");
+	}
 
 }
 
@@ -91,22 +127,15 @@ int main() {
 	scanf("%d", &t);
 
 	while (t--) {
-		
-		int vertex, totalCost, edge;
-		scanf("%d %d %d", &vertex, &totalCost, &edge);
 
-		init(vertex, totalCost, edge);
+		int n, m, k;
+		scanf("%d %d %d", &n, &m, &k);
 
-		findPath(1, vertex, totalCost, 0, 0);
+		init(n, m, k);
 
-		if (solution == 987654321) {
-			printf("Poor KCM\n");
-		}
-		else {
-			printf("%d\n", solution);
-		}
+		findPath(n, m, k);
 
-		free(vertex);
+		free(n, m, k);
+
 	}
-
 }
