@@ -44,36 +44,21 @@ void init(int n, int m) {
 
 void solution(int n, int m) {
 	
-	for (int k = 1; k <= n - 1; k++) {
+	bool flag = false;
+
+	for (int k = 1; k <= n; k++) {
 		for (int i = 1; i <= n; i++) {
 			for (int j = 0; j < busTable[i].size(); j++) {
 				if (busTable[i][j].weight + shortestTable[i] < shortestTable[busTable[i][j].end]) {
 					shortestTable[busTable[i][j].end] = busTable[i][j].weight + shortestTable[i];
+
+					if (k == n) flag = true;
 				}
 			}
 		}
 	}
 	
-	for (int i = 1; i <= n; i++) {
-		tempSolution[i] = shortestTable[i];
-	}
-	for (int i = 1; i <= n; i++) {
-		for (int j = 0; j < busTable[i].size(); j++) {
-			if (busTable[i][j].weight + shortestTable[i] < shortestTable[busTable[i][j].end]) {
-				shortestTable[busTable[i][j].end] = busTable[i][j].weight + shortestTable[i];
-			}
-		}
-	}
-
-	bool flag = 0;
-	for (int i = 1; i <= n; i++) {
-		if (tempSolution[i] != shortestTable[i]) {
-			flag = 1;
-			break;
-		}
-	}
-
-	if (flag == 1) {
+	if (flag == true) {
 		printf("-1\n");
 	}
 	else {
