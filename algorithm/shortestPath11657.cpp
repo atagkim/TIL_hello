@@ -11,7 +11,7 @@ struct unit {
 	int weight;
 };
 vector<vector<unit>> busTable;
-int shortestTable[6010];
+long long shortestTable[6010];
 int tempSolution[6010];
 
 
@@ -37,6 +37,7 @@ void init(int n, int m) {
 		busTable[start].push_back(input);
 	}
 	
+	shortestTable[1] = 0;
 	for (int i = 2; i <= n; i++) {
 		shortestTable[i] = 987654321;
 	}
@@ -49,7 +50,7 @@ void solution(int n, int m) {
 	for (int k = 1; k <= n; k++) {
 		for (int i = 1; i <= n; i++) {
 			for (int j = 0; j < busTable[i].size(); j++) {
-				if (busTable[i][j].weight + shortestTable[i] < shortestTable[busTable[i][j].end]) {
+				if ( shortestTable[i] != 987654321 && busTable[i][j].weight + shortestTable[i] < shortestTable[busTable[i][j].end]) {
 					shortestTable[busTable[i][j].end] = busTable[i][j].weight + shortestTable[i];
 
 					if (k == n) flag = true;
