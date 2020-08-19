@@ -1,121 +1,107 @@
 #include <stdio.h>
 #include <queue>
-#pragma warning(disable:4996)
+#include <algorithm>
+
 using namespace std;
 
-struct edgeUnit {
-	int start;
+
+struct inputUnit {
 	int end;
 	int cost;
-	int dist;
+	int time;
 };
 
 struct pqUnit {
-	int node;
-	int dist;
+	int start;
 	int cost;
+	int time;
 };
+vector<inputUnit> inputTable[110];
 
 struct cmp {
-
 	bool operator()(pqUnit a, pqUnit b) {
-		return a.dist > b.dist;
+		return a.cost > b.cost;
 	}
 };
-
 priority_queue<pqUnit, vector<pqUnit>, cmp> pq;
 
-vector<vector<edgeUnit>> edgeTable;
+int timeTable[110][10010];
 
-bool checkList[110][10010];
-int distPerCostTable[110][10010];
 
 void init(int n, int m, int k) {
 
-	vector<edgeUnit> buf;
-	for (int i = 0; i <= n; i++) {
-		edgeTable.push_back(buf);
-	}
-
-	edgeUnit input;
 	for (int i = 1; i <= k; i++) {
-		scanf("%d %d %d %d", &input.start, &input.end, &input.cost, &input.dist);
+		
+		int start;
+		inputUnit input;
+		scanf("%d %d %d %d",&start, &input.end, &input.cost, &input.time );
 
-		edgeTable[input.start].push_back(input);
-	}
-	
-	for (int i = 1; i <= n; i++) {
-		for (int j = 1; j <= m; j++) {
-			checkList[i][j] = 0;
-		}
+		inputTable[start].push_back(input);
 	}
 
+	for (int j = 0; j <= 10000; j++) {
+		timeTable[1][j] = 0;
+	}
 	for (int i = 2; i <= n; i++) {
-		for (int j = 1; j <= 10000; j++) {
-			distPerCostTable[i][j] = 987654321;
+		for (int j = 0; j <= 10000; j++) {
+			timeTable[i][j] = 987654321;
 		}
 	}
-	
-}
 
+}
 
 void free(int n, int m, int k) {
 
-	for (int i = 0; i <= n; i++) {
-		edgeTable[i].clear();
+	for (int i = 1; i <= n; i++) {
+		inputTable[i].clear();
 	}
-	edgeTable.clear();
-
-	while (!pq.empty()) {
-		pq.pop();
-	}
-
 }
 
-void findPath(int n, int totalCost, int destination) {
+void dijk(int n, int m, int k) {
 
-	pqUnit start;
-	start.node = 1;
-	start.cost = 0;
-	start.dist = 0;
-	
-	pq.push(start);
+	pqUnit fire;
+	fire.cost = 0;
+	fire.start = 1;
+	fire.time = 0;
+
+	pq.push(fire);
 
 	while (!pq.empty()) {
 
 		pqUnit current = pq.top();
+		int start = current.start;
+		int cost = current.cost;
+		int time = current.time;
 		pq.pop();
 
-		if (checkList[current.node][current.cost] == 1) continue;
-		checkList[current.node][current.cost] = 1;
+		if (timeTable[start][cost] < time) {
+			continue;
+		}
 
-		for (int i = 0; i < edgeTable[current.node].size(); i++) {
-			edgeUnit currentEdge = edgeTable[current.node][i];
+		for (int i = 0; i < inputTable[start].size(); i++) {
+			int end = inputTable[start][i].end;
+			int costAdded = inputTable[start][i].cost;
+			int timeAdded = inputTable[start][i].time;
 
-			if (currentEdge.cost + current.cost > totalCost) continue;
-
-			if (current.dist + currentEdge.dist < distPerCostTable[currentEdge.end][current.cost + currentEdge.cost]) {
-				distPerCostTable[currentEdge.end][current.cost + currentEdge.cost] = current.dist + currentEdge.dist;
-
+			if (cost + costAdded > m) 
+				continue;
+			if (time + timeAdded < timeTable[end][cost + costAdded]) {
+			
+				for (int i = cost + costAdded; i <= m; i++) {
+					if (timeTable[end][i] > time + timeAdded) {
+						timeTable[end][i] = time + timeAdded;
+					}
+				}
+		
 				pqUnit next;
-				next.node = currentEdge.end;
-				next.dist = current.dist + currentEdge.dist;
-				next.cost = current.cost + currentEdge.cost;
+				next.start = end;
+				next.cost = cost + costAdded;
+				next.time = time + timeAdded;
 
 				pq.push(next);
 			}
 
 		}
-
-	}
-
-	for (int i = 1; i <= totalCost; i++) {
-		if (distPerCostTable[destination][i] != 987654321) {
-			printf("%d\n", distPerCostTable[destination][i]);
-			break;
-		}
-
-		if (i == totalCost) printf("Poor KCM\n");
 	}
 
 }
@@ -133,9 +119,23 @@ int main() {
 
 		init(n, m, k);
 
-		findPath(n, m, k);
+		dijk(n, m, k);
+
+
+
+		int solution = 987654321;
+		for (int i = 1; i <= m; i++) {
+			if (timeTable[n][i] < solution)
+				solution = timeTable[n][i];
+		}
+		if (solution == 987654321) 
+			printf("Poor KCM\n");
+		else
+			printf("%d\n", solution);
 
 		free(n, m, k);
 
 	}
+
 }
+
