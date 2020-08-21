@@ -7,7 +7,6 @@ struct matrixUnit {
 
 matrixUnit baseMatrix;
 
-
 void init(int n, int b) {
 
 	baseMatrix.n = n;
