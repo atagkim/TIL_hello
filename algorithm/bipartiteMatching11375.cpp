@@ -9,7 +9,6 @@ int solutionCount;
 
 int jobDFS(int oldOne, int newOne, int jobTarget) {
 
-
 	nodeCheckTable[oldOne] = 1;
 
 	for (int i = 0; i < jobTable[oldOne].size(); i++) {
