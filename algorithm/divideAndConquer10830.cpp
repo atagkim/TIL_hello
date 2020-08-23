@@ -6,17 +6,22 @@ struct matrixUnit {
 };
 
 matrixUnit baseMatrix;
+matrixUnit current;
+matrixUnit solution;
 
-void init(int n, int b) {
+void init(int n, long long b) {
 
 	baseMatrix.n = n;
+	solution.n = n;
 
 	for (int i = 1; i <= n; i++) {
 		for (int j = 1; j <= n; j++) {
 			scanf("%d", &baseMatrix.a[i][j]);
 		}
+		solution.a[i][i] = 1;
 	}
 
+	current = baseMatrix;
 }
 
 matrixUnit matrixMultiplication(matrixUnit a, matrixUnit b) {
@@ -42,17 +47,21 @@ matrixUnit matrixMultiplication(matrixUnit a, matrixUnit b) {
 	
 }
 
-matrixUnit calculate(int n, int start, int end) {
+void calculate(int n, int start, long long end) {
 
-	if (end - start >= 2) {
-		return matrixMultiplication( calculate(n, start, (start + end) / 2), calculate(n, (start + end) / 2 + 1, end) );
+	if (end == start) {
+		solution = matrixMultiplication(solution, current);
 	}
-	else if(end - start == 1){
+	else if (end < (long long)(start * 2)) {
+		solution = matrixMultiplication(solution, current);
 		
-		return matrixMultiplication(baseMatrix, baseMatrix);
+		current = baseMatrix;
+		calculate(n, 1, end - (long long)start);
 	}
 	else {
-		return baseMatrix;
+		current = matrixMultiplication(current, current);
+
+		calculate(n, start * 2, end);
 	}
 
 }
@@ -60,12 +69,13 @@ matrixUnit calculate(int n, int start, int end) {
 
 int main() {
 
-	int n, b;
-	scanf("%d %d", &n, &b);
+	int n;
+	long long b;
+	scanf("%d %lld", &n, &b);
 
 	init(n, b);
 
-	matrixUnit solution = calculate(n, 1, b);
+	calculate(n, 1, b);
 
 	for (int i = 1; i <= n; i++) {
 		for (int j = 1; j <= n; j++) {
