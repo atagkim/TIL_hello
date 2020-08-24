@@ -24,9 +24,10 @@ void init(int n, long long b) {
 	current = baseMatrix;
 }
 
-matrixUnit matrixMultiplication(matrixUnit a, matrixUnit b) {
+void matrixMultiplication(matrixUnit* a, matrixUnit* b) {
 
-	int n = a.n;
+	int n = a->n;
+
 	matrixUnit result;
 	result.n = n;
 
@@ -36,38 +37,56 @@ matrixUnit matrixMultiplication(matrixUnit a, matrixUnit b) {
 			result.a[i][j] = 0;
 
 			for (int k = 1; k <= n; k++) {
-				result.a[i][j] += a.a[i][k] * b.a[k][j];
+				result.a[i][j] += a->a[i][k] * b->a[k][j];
+				result.a[i][j] %= 1000;
 			}
 			
-			result.a[i][j] %= 1000;
 		}
 	}
 
-	return result;
-	
+	for (int i = 1; i <= n; i++) {
+		for (int j = 1; j <= n; j++) {
+			a->a[i][j] = result.a[i][j];
+		}
+	}
+
+
 }
 
 void calculate(int n, int start, long long end) {
 
-	if (end == start) {
-		solution = matrixMultiplication(solution, current);
-	}
-	else if (end < (long long)(start * 2)) {
-		solution = matrixMultiplication(solution, current);
-		
-		current = baseMatrix;
-		calculate(n, 1, end - (long long)start);
-	}
-	else {
-		current = matrixMultiplication(current, current);
 
-		calculate(n, start * 2, end);
+	while (end > start) {
+
+		if (end < (long long)start * 2) {
+			
+			end = end - start;
+			start = 1;
+
+			matrixMultiplication(&solution, &current);
+			
+			current = baseMatrix;
+		
+		}
+		else {
+
+			start = start * 2;
+
+			matrixMultiplication(&current, &current);
+
+		}
+
 	}
+	
+	matrixMultiplication(&solution, &current);
+
+	return;
 
 }
 
 
 int main() {
+
 
 	int n;
 	long long b;
