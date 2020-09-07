@@ -74,6 +74,8 @@ void bfs(int h, int w, int x, int y) {
 					next.x = nextX;
 					next.y = nextY;
 
+					visitTable[nextX][nextY] = 1;
+
 					qqu.push(next);
 
 				}
@@ -108,7 +110,5 @@ int main() {
 		printf("%d\n", solution);
 
 	}
-
-
 
 }
