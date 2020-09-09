@@ -1,7 +1,17 @@
 #include <stdio.h>
 #include <queue>
+#include <algorithm>
 
 using namespace std;
+
+int inputTable[110][110];
+int checkTable[110][110];
+
+int xAdded[5] = { 0,1,-1,0,0 };
+int yAdded[5] = { 0,0,0,1,-1 };
+
+int solutionNum;
+vector<int> solutionValue;
 
 struct unit {
 	int x;
@@ -10,45 +20,51 @@ struct unit {
 
 queue<unit> qqu;
 
-int checkTable[110][110];
-int inputTable[110][110];
+void init(int n, int m, int k) {
 
-int xAdded[10] = { 0,0,0,1,-1 };
-int yAdded[10] = { 0,1,-1,0,0 };
+	int x1, y1, x2, y2;
+	for (int i = 1; i <= k; i++) {
+		scanf("%d %d %d %d", &x1, &y1, &x2, &y2);
 
-int solution, realSolution;
+		x1++;
+		y1++;
 
-void init(int n, int* min, int* max) {
+		for (int j = x1; j <= x2; j++) {
+			for (int l = y1; l <= y2; l++) {
+				inputTable[j][l] = 1;
+			}
+		}
 
-	int input;
+	}
+
+}
+
+void initCheck(int n, int m) {
+
 	for (int i = 1; i <= n; i++) {
-		for (int j = 1; j <= n; j++) {
-
-			scanf("%d", &input);
-
-			if (input > *max)
-				*max = input;
-			if (input < *min)
-				*min = input;
-
-			inputTable[i][j] = input;
+		for (int j = 1; j <= m; j++) {
+			checkTable[i][j] = 0;
 		}
 	}
 }
 
-
-void bfs(int n, int x, int y, int k) {
-
+void bfs(int n, int m, int x, int y) {
+	
 	unit fire;
 	fire.x = x;
 	fire.y = y;
 
-	if (x > 0 && y > 0 && x <= n && y <= n && checkTable[x][y] == 0 && inputTable[x][y] > k) {
-		qqu.push(fire);
-		
-		checkTable[x][y] = 1;
-		
-		solution++;
+	int area = 0;
+
+	if (x >= 1 && y >= 1 && x <= n && y <= m) {
+		if (inputTable[x][y] == 0 && checkTable[x][y] == 0) {
+			qqu.push(fire);
+
+			checkTable[x][y] = 1;
+
+			solutionNum++;
+			area = 1;
+		}
 	}
 
 	while (!qqu.empty()) {
@@ -61,49 +77,43 @@ void bfs(int n, int x, int y, int k) {
 			next.x = current.x + xAdded[i];
 			next.y = current.y + yAdded[i];
 
-			if (next.x < 1 || next.y < 1 || next.x > n || next.y > n)
-				continue;
+			if (next.x > 0 && next.y > 0 && next.x <= n && next.y <= m) {
+				if (inputTable[next.x][next.y] == 0 && checkTable[next.x][next.y] == 0) {
+					qqu.push(next);
 
-			if (checkTable[next.x][next.y] == 0 && inputTable[next.x][next.y] > k) {
-				checkTable[next.x][next.y] = 1;
-
-				qqu.push(next);
+					checkTable[next.x][next.y] = 1;
+					area++;
+				}
 			}
+
 		}
 	}
 
+	if (area != 0) {
+		solutionValue.push_back(area);
+	}
+	
 }
+
 
 
 int main() {
 
-	int n;
-	scanf("%d", &n);
+	int n, m, k;
+	scanf("%d %d %d", &m, &n, &k);
 
-	int min = 987654321, max = 0;
-	init(n, &min, &max);
-
-	for (int k = min; k < max; k++) {
-
-		solution = 0;
-
-		for (int i = 1; i <= n; i++) {
-			for (int j = 1; j <= n; j++) {
-				checkTable[i][j] = 0;
-			}
-		}
-
-		for (int i = 1; i <= n; i++) {
-			for (int j = 1; j <= n; j++) {
-				bfs(n, i, j, k);
-			}
-		}
-
-		if (realSolution < solution)
-			realSolution = solution;
-	}
+	init(n, m, k);
 	
-	printf("%d", realSolution);
+	for (int i = 1; i <= n; i++) {
+		for (int j = 1; j <= m; j++) {
+			bfs(n, m, i, j);
+		}
+	}
 
+	sort(solutionValue.begin(), solutionValue.end());
+
+	printf("%d\n", solutionNum);
+	for (int i = 0; i < solutionValue.size(); i++) {
+		printf("%d ", solutionValue[i]);
+	}
 }
-
