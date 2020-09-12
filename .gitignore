@@ -1,3 +1,4 @@
 algorithm/*
 !algorithm/*.cpp
+!algorithm/*.c
 algorithm/test.cpp
