@@ -45,6 +45,9 @@ int main() {
 
 	dfs(n, m, x, y, x, 0);
 
-	printf("%d", solution);
+	if (solution == 0)
+		printf("-1");
+	else
+		printf("%d", solution);
 }
 
