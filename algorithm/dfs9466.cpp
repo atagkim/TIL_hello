@@ -21,9 +21,9 @@ void dfs(int goal, int current, int n) {
 	visitTable[current] = 1;
 
 	if (goal == inputTable[current]) {
-		checkFlag = 1;
+		checkFlag = 1;		
 		grouped++;
-		
+
 		return;
 	}
 
@@ -32,6 +32,8 @@ void dfs(int goal, int current, int n) {
 		if (checkFlag == 1) {
 			grouped++;
 		}
+		else
+			visitTable[current] = 0;
 	}
 	else {
 		visitTable[current] = 0;
