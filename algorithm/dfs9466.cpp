@@ -1,8 +1,12 @@
 #include <stdio.h>
+#include <stack>
+using namespace std;
 
 int inputTable[100100];
 int visitTable[100100];
 int checkFlag, grouped;
+
+stack<int> stt;
 
 void init(int n) {
 	for (int i = 1; i <= n; i++) {
@@ -18,25 +22,41 @@ void initVisit(int n) {
 
 void dfs(int goal, int current, int n) {
 
-	visitTable[current] = 1;
 
-	if (goal == inputTable[current]) {
-		checkFlag = 1;		
-		grouped++;
+	while (1) {
 
-		return;
-	}
+		visitTable[current] = 1;
+		stt.push(current);
 
-	if (visitTable[inputTable[current]] == 0) {
-		dfs(goal, inputTable[current], n);
-		if (checkFlag == 1) {
-			grouped++;
+		if (goal == inputTable[current]) {
+			grouped = grouped + stt.size();
+
+			break;
 		}
-		else
-			visitTable[current] = 0;
+
+		if (visitTable[inputTable[current]] == 0) {
+			current = inputTable[current];
+		}
+		else {
+			
+			int sttCurrent;
+			while (!stt.empty()) {
+				sttCurrent = stt.top();
+				stt.pop();
+
+				visitTable[sttCurrent] = 0;
+			}
+
+			break;
+		}
+
 	}
-	else {
-		visitTable[current] = 0;
+
+}
+
+void initStt() {
+	while (!stt.empty()) {
+		stt.pop();
 	}
 }
 
@@ -55,7 +75,8 @@ int main() {
 		
 		for (int i = 1; i <= n; i++) {	
 			checkFlag = 0;
-			
+			initStt();
+
 			dfs(i, i, n);
 		}
 		printf("%d\n", n - grouped);
