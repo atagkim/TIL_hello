@@ -7,7 +7,7 @@ int maxTopo;
 int maxTopoTable[15];
 int maxTopoTop;
 char inputTable[30];
-int visitTable[15];
+int visitTable[15], checkNumTable[15];
 char tempSolution[15];
 int maxSolution, minSolution = 987654321;
 char maxPrint[15], minPrint[15];
@@ -57,6 +57,9 @@ void initVisit(int k) {
 	for (int i = 0; i <= k; i++) {
 		visitTable[i] = 0;
 	}
+	for (int i = 0; i < 10; i++) {
+		checkNumTable[i] = 0;
+	}
 
 }
 
@@ -75,6 +78,7 @@ void dfs(int current, int v, int k) {
 
 	visitTable[current] = 1;
 	tempSolution[current] = '0' + v;
+	checkNumTable[v] = 1;
 
 	int tempMaxTopo = findMaxTopo(k);
 
@@ -96,11 +100,33 @@ void dfs(int current, int v, int k) {
 	}
 
 	for (int i = 0; i <= k; i++) {
-		for (int j = v - 1; j >= 0; j--) {
-			if (topoTable[i] == tempMaxTopo && visitTable[i] == 0 ) {
+		for (int j = 9; j >= 0; j--) {
+			if (topoTable[i] == tempMaxTopo && visitTable[i] == 0 && checkNumTable[j] == 0) {
 			
-				dfs(i, j, k);
-				visitTable[i] = 0;
+				bool flag = 1;
+
+				if (i - 1 >= 0 && visitTable[i-1] == 1) {
+
+					if (inputTable[i - 1] == '<' && tempSolution[i - 1] - '0' >= j)
+						flag = 0;
+
+					else if (inputTable[i - 1] == '>' && tempSolution[i - 1] - '0' <= j)
+						flag = 0;
+				}
+				if (i + 1 <= k && visitTable[i + 1] == 1) {
+
+					if (inputTable[i] == '<' && tempSolution[i + 1] - '0' <= j)
+						flag = 0;
+
+					else if (inputTable[i] == '>' && tempSolution[i + 1] - '0' >= j)
+						flag = 0;
+				}
+
+				if(flag){
+					dfs(i, j, k);
+					visitTable[i] = 0;
+					checkNumTable[j] = 0;
+				}
 
 			}
 		}
