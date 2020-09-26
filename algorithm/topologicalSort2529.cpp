@@ -1,15 +1,16 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 
 int topoTable[15];
-int tempTopo[15];
-int maxTopo, tempMaxTopo;
+int maxTopo;
 int maxTopoTable[15];
 int maxTopoTop;
 char inputTable[30];
 int visitTable[15];
 char tempSolution[15];
 int maxSolution, minSolution = 987654321;
+char maxPrint[15], minPrint[15];
 
 void initTopo(int k) {
 
@@ -50,12 +51,6 @@ void initTopo(int k) {
 	}
 }
 
-void pasteTopo(int k) {
-
-	for (int i = 0; i <= k; i++) {
-		tempTopo[i] = topoTable[i];
-	}
-}
 
 void initVisit(int k) {
 
@@ -65,51 +60,55 @@ void initVisit(int k) {
 
 }
 
+int findMaxTopo(int k) {
 
-void dfs(int current, int k, int v) {
+	int revalue = -1;
+	for (int i = 0; i <= k; i++) {
+		if (topoTable[i] > revalue && visitTable[i] == 0)
+			revalue = topoTable[i];
+	}
+	return revalue;
+}
+
+
+void dfs(int current, int v, int k) {
 
 	visitTable[current] = 1;
 	tempSolution[current] = '0' + v;
 
-	tempMaxTopo = -1;
-	for (int i = 0; i <= k; i++) {
-		if (tempTopo[i] > tempMaxTopo && visitTable[i] == 0)
-			tempMaxTopo = tempTopo[i];
-	}
+	int tempMaxTopo = findMaxTopo(k);
 
 	if (tempMaxTopo == -1) {
 		tempSolution[k + 1] = 0;
 		int currentSolution = atoi(tempSolution);
 
-		if (currentSolution > maxSolution)
+		if (currentSolution > maxSolution) {
 			maxSolution = currentSolution;
+			strcpy(maxPrint, tempSolution);
+		}
 
-		if (currentSolution < minSolution)
+		if (currentSolution < minSolution) {
 			minSolution = currentSolution;
+			strcpy(minPrint, tempSolution);
+		}
 
 		return;
 	}
 
 	for (int i = 0; i <= k; i++) {
-		for (int j = 0; j < v; j++) {
-			if (tempTopo[i] == tempMaxTopo && visitTable[i] == 0 ) {
+		for (int j = v - 1; j >= 0; j--) {
+			if (topoTable[i] == tempMaxTopo && visitTable[i] == 0 ) {
 			
-				dfs(i, k, j);
+				dfs(i, j, k);
 				visitTable[i] = 0;
 
 			}
 		}
 	}
 
-
-
 }
 
-
-int main() {
-
-	int k;
-	scanf("%d", &k);
+void scan(int k) {
 
 	for (int i = 0; i < k * 2; i++) {
 		char input;
@@ -119,19 +118,26 @@ int main() {
 			inputTable[i / 2] = input;
 	}
 
-	initTopo(k);
-	pasteTopo(k);
+}
 
+
+int main() {
+
+	int k;
+	scanf("%d", &k);
+	scan(k);
+
+	initTopo(k);
+	
 	for (int i = 0; i < maxTopoTop; i++) {
-		for (int j = 0; j <= 9; j++) {
+		for (int v = 9; v >= 0; v--) {
 
 			initVisit(k);
 
-			dfs(i, k, j);
-
+			dfs(maxTopoTable[i], v, k);
 		}		
 	}
 
-	printf("%d\n%d", minSolution, maxSolution);
+	printf("%s\n%s", maxPrint, minPrint);
 
 }
