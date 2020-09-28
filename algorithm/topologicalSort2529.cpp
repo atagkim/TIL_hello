@@ -1,169 +1,129 @@
 #include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
 
-int topoTable[15];
-int maxTopo;
-int maxTopoTable[15];
-int maxTopoTop;
-char inputTable[30];
-int visitTable[15], checkNumTable[15];
-char tempSolution[15];
-int maxSolution, minSolution = 987654321;
-char maxPrint[15], minPrint[15];
+char inputTable[15][5];
+int indegree[15], visit[15], visitFlag;
+int outdegree[15][15];
+int outdegreeSize[15];
 
-void initTopo(int k) {
+int stack[15];
+int top;
 
-	for (int i = 0; i <= k; i++) {
+int tempSolution[15];
+int solution[15];
 
-		int left = i - 1;
-		int right = i;
+void scan(int n) {
 
-		while (1) {
-			if (left < 0)
+	for (int i = 0; i < n; i++) {
+		scanf("%s", inputTable[i]);
+	}
+}
+
+void initDegree(int n) {
+	for (int i = 0; i <= n; i++) {
+		int left = i - 1, right = i + 1;
+
+		while (left >= 0) {
+			if (inputTable[left][0] == '<')
 				break;
-			else if (inputTable[left] != '<')
-				break;
-
-			topoTable[i]++;
+			
+			indegree[i]++;
+			outdegree[left][outdegreeSize[left]++] = i;
+			
 			left--;
 		}
-		
-		while (1) {
-			if (right >= k)
-				break;
-			else if (inputTable[right] != '>')
+
+		while (right <= n) {
+			if (inputTable[right - 1][0] == '>')
 				break;
 
-			topoTable[i]++;
+			indegree[i]++;
+			outdegree[right][outdegreeSize[right]++] = i;
+
 			right++;
 		}
 	}
 
-	for (int i = 0; i <= k; i++) {
-		if (topoTable[i] > maxTopo)
-			maxTopo = topoTable[i];
-	}
-
-	for (int i = 0; i <= k; i++) {
-		if (topoTable[i] == maxTopo)
-			maxTopoTable[maxTopoTop++] = i;
-	}
 }
 
-
-void initVisit(int k) {
-
-	for (int i = 0; i <= k; i++) {
-		visitTable[i] = 0;
-	}
-	for (int i = 0; i < 10; i++) {
-		checkNumTable[i] = 0;
+void checkZero(int n) {
+	
+	top = 0;
+	for (int i = 0; i <= n; i++) {
+		if (indegree[i] == 0) {
+			indegree[i] = -1;
+			stack[top++] = i;
+		}
 	}
 
 }
 
-int findMaxTopo(int k) {
+int checkPossible(int n, int current, int what) {
+	
+	int revalue = 1;
 
-	int revalue = -1;
-	for (int i = 0; i <= k; i++) {
-		if (topoTable[i] > revalue && visitTable[i] == 0)
-			revalue = topoTable[i];
+	if (current - 1 >= 0) {
+		if(visit[current-1] == 1){
+			if (inputTable[current - 1][0] == '>') {
+				if (tempSolution[current - 1] <= what)
+					revalue = 0;
+			}
+			else {
+				if (tempSolution[current - 1] >= what)
+					revalue = 0;
+			}
+		}
+	}
+	if (current + 1 <= n) {
+		if (visit[current + 1] == 1) {
+			if (inputTable[current][0] == '>') {
+				if (what <= tempSolution[current + 1])
+					revalue = 0;
+			}
+			else {
+				if (what >= tempSolution[current + 1])
+					revalue = 0;
+			}
+		}
 	}
 	return revalue;
 }
 
+void dfs(int n) {
 
-void dfs(int current, int v, int k) {
-
-	visitTable[current] = 1;
-	tempSolution[current] = '0' + v;
-	checkNumTable[v] = 1;
-
-	int tempMaxTopo = findMaxTopo(k);
-
-	if (tempMaxTopo == -1) {
-		tempSolution[k + 1] = 0;
-		int currentSolution = atoi(tempSolution);
-
-		if (currentSolution > maxSolution) {
-			maxSolution = currentSolution;
-			strcpy(maxPrint, tempSolution);
-		}
-
-		if (currentSolution < minSolution) {
-			minSolution = currentSolution;
-			strcpy(minPrint, tempSolution);
-		}
-
+	if (visitFlag == 1) {
 		return;
 	}
 
-	for (int i = 0; i <= k; i++) {
-		for (int j = 9; j >= 0; j--) {
-			if (topoTable[i] == tempMaxTopo && visitTable[i] == 0 && checkNumTable[j] == 0) {
-			
-				bool flag = 1;
+	checkZero(n);
 
-				if (i - 1 >= 0 && visitTable[i-1] == 1) {
+	int idx = 0;
+	while (idx < top) {
+		int current = stack[idx++];
 
-					if (inputTable[i - 1] == '<' && tempSolution[i - 1] - '0' >= j)
-						flag = 0;
+		for (int i = 9; i >= 0; i--) {
 
-					else if (inputTable[i - 1] == '>' && tempSolution[i - 1] - '0' <= j)
-						flag = 0;
-				}
-				if (i + 1 <= k && visitTable[i + 1] == 1) {
+			int possible = checkPossible(n, current, i);
 
-					if (inputTable[i] == '<' && tempSolution[i + 1] - '0' <= j)
-						flag = 0;
-
-					else if (inputTable[i] == '>' && tempSolution[i + 1] - '0' >= j)
-						flag = 0;
-				}
-
-				if(flag){
-					dfs(i, j, k);
-					visitTable[i] = 0;
-					checkNumTable[j] = 0;
-				}
-
+			if (possible == 1) {
+				tempSolution[current] = i;
+				dfs()
 			}
 		}
+
 	}
 
 }
-
-void scan(int k) {
-
-	for (int i = 0; i < k * 2; i++) {
-		char input;
-		scanf("%c", &input);
-
-		if (i % 2 == 1)
-			inputTable[i / 2] = input;
-	}
-
-}
-
 
 int main() {
-
-	int k;
-	scanf("%d", &k);
-	scan(k);
-
-	initTopo(k);
 	
-	for (int i = 0; i < maxTopoTop; i++) {
-		for (int v = 9; v >= 0; v--) {
+	int n;
+	scanf("%d", &n);
 
-			initVisit(k);
+	scan(n);
 
-			dfs(maxTopoTable[i], v, k);
-		}		
-	}
+	initDegree(n);
 
-	printf("%s\n%s", maxPrint, minPrint);
+	dfs(n);
 
 }
+
