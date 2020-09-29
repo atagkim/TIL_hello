@@ -1,129 +1,135 @@
 #include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
 
-char inputTable[15][5];
-int indegree[15], visit[15], visitFlag;
-int outdegree[15][15];
-int outdegreeSize[15];
+int inputTable[15][5];
+int flag;
+int checkNum[15];
+char tempSolution[15];
+char max[15], min[15];
 
-int stack[15];
-int top;
+void init(int n) {
 
-int tempSolution[15];
-int solution[15];
-
-void scan(int n) {
-
+	char input[10];
 	for (int i = 0; i < n; i++) {
 		scanf("%s", inputTable[i]);
 	}
 }
 
-void initDegree(int n) {
-	for (int i = 0; i <= n; i++) {
-		int left = i - 1, right = i + 1;
+int checkPossible(int next, int idx, int n) {
 
-		while (left >= 0) {
-			if (inputTable[left][0] == '<')
-				break;
-			
-			indegree[i]++;
-			outdegree[left][outdegreeSize[left]++] = i;
-			
-			left--;
+	if (idx - 1 >= 0) {
+		if(inputTable[idx - 1][0] == '>'){
+			if (tempSolution[idx - 1] > '0' + next)
+				return 1;
+			return 0;
 		}
-
-		while (right <= n) {
-			if (inputTable[right - 1][0] == '>')
-				break;
-
-			indegree[i]++;
-			outdegree[right][outdegreeSize[right]++] = i;
-
-			right++;
+		else {
+			if (tempSolution[idx - 1] < '0' + next)
+				return 1;
+			return 0;
 		}
 	}
 
 }
 
-void checkZero(int n) {
+void dfs(int current, int idx, int n, int swich) {
+
+	checkNum[current] = 1;
+	tempSolution[idx] = '0' + current;
+
+	if (idx == n) {
+		
+		tempSolution[n + 1] = 0;
 	
-	top = 0;
-	for (int i = 0; i <= n; i++) {
-		if (indegree[i] == 0) {
-			indegree[i] = -1;
-			stack[top++] = i;
-		}
-	}
+		if (swich == 1)
+			strcpy(max, tempSolution);
+		else
+			strcpy(min, tempSolution);
 
-}
-
-int checkPossible(int n, int current, int what) {
-	
-	int revalue = 1;
-
-	if (current - 1 >= 0) {
-		if(visit[current-1] == 1){
-			if (inputTable[current - 1][0] == '>') {
-				if (tempSolution[current - 1] <= what)
-					revalue = 0;
-			}
-			else {
-				if (tempSolution[current - 1] >= what)
-					revalue = 0;
-			}
-		}
-	}
-	if (current + 1 <= n) {
-		if (visit[current + 1] == 1) {
-			if (inputTable[current][0] == '>') {
-				if (what <= tempSolution[current + 1])
-					revalue = 0;
-			}
-			else {
-				if (what >= tempSolution[current + 1])
-					revalue = 0;
-			}
-		}
-	}
-	return revalue;
-}
-
-void dfs(int n) {
-
-	if (visitFlag == 1) {
+		flag = 1;
 		return;
 	}
 
-	checkZero(n);
-
-	int idx = 0;
-	while (idx < top) {
-		int current = stack[idx++];
-
+	if (swich == 1) {
 		for (int i = 9; i >= 0; i--) {
+			if (checkNum[i] == 0) {
+				if (checkPossible(i, idx + 1, n)) {
 
-			int possible = checkPossible(n, current, i);
+					dfs(i, idx + 1, n, swich);
 
-			if (possible == 1) {
-				tempSolution[current] = i;
-				dfs()
+						checkNum[i] = 0;
+
+						if (flag == 1)
+							return;
+				}
 			}
 		}
+	}
 
+	else {
+		for (int i = 0; i < 10; i++) {
+			if (checkNum[i] == 0 && checkPossible(i, idx + 1, n)) {
+
+				dfs(i, idx + 1, n, swich);
+
+				checkNum[i] = 0;
+
+				if (flag == 1)
+					return;
+			}
+		}
 	}
 
 }
 
-int main() {
-	
-	int n;
-	scanf("%d", &n);
 
-	scan(n);
+void findMax(int n) {
 
-	initDegree(n);
+	for (int i = 9; i >= 0; i--) {
+		dfs(i, 0, n, 1);
 
-	dfs(n);
+		checkNum[i] = 0;
+
+		if (flag == 1)
+			break;
+	}
+	printf("%s\n", max);
+}
+
+void findMin(int n) {
+
+	for (int i = 0; i < 10; i++) {
+		dfs(i, 0, n, 0);
+
+		checkNum[i] = 0;
+
+		if (flag == 1)
+			break;
+	}
+	printf("%s\n", min);
 
 }
 
+void initForDfs() {
+	
+	flag = 0;
+
+	for (int i = 0; i < 10; i++) {
+		checkNum[i] = 0;
+	}
+}
+
+int main() {
+
+	int n;
+	scanf("%d", &n);
+
+	init(n);
+
+	findMax(n);
+
+	initForDfs();
+	findMin(n);
+
+}
