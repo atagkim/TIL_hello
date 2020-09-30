@@ -1,6 +1,9 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+int answer[1010];
+int answerTop;
+
 int queue[1010];
 int front, real;
 
@@ -17,9 +20,9 @@ struct unit** edgeTable;
 
 void add(int node, int input) {
 
+	if (board[node][input] == 1)
+		return;
 	board[node][input] = 1;
-	if (board[input][node] == 1)
-		flag = 1;
 
 	indegree[input]++;
 
@@ -55,20 +58,6 @@ void init(int n, int m) {
 
 	for (int i = 0; i <= n; i++) {
 		edgeTable[i] = NULL;
-	}
-}
-
-void print(int n, int m) {
-
-	for (int i = 1; i <= n; i++) {
-		struct unit* next = edgeTable[i];
-		printf("%d: ", i);
-		while (next != NULL) {
-
-			printf("%d ", next->value);
-			next = next->next;
-		}
-		printf("\n");
 	}
 }
 
@@ -116,7 +105,7 @@ void findSolution(int n, int m) {
 			current = qquFront();
 			qquPop();
 
-			printf("%d ", current);
+			answer[answerTop++] = current;
 
 			struct unit* next = edgeTable[current];
 			while (next != NULL) {
@@ -139,9 +128,14 @@ int main() {
 
 	scan(n, m);
 
-	if (flag == 1)
+	findSolution(n, m);
+
+	if (answerTop != n)
 		printf("0");
+
 	else
-		findSolution(n, m);
+		for (int i = 0; i < n; i++)
+			printf("%d\n", answer[i]);
+	
 }
 
