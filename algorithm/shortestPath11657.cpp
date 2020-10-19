@@ -43,6 +43,7 @@ void init(int n, int m) {
 	}
 }
 
+// 벨만 포드
 void solution(int n, int m) {
 	
 	bool flag = false;
