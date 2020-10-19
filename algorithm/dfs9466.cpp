@@ -1,84 +1,81 @@
 #include <stdio.h>
-#include <stack>
-using namespace std;
 
-int inputTable[100100];
-int visitTable[100100];
-int checkFlag, grouped;
-
-stack<int> stt;
+int inputTable[100010];
+int visitTable[100010];
+int cycleChecker[100010];
+int solution;
 
 void init(int n) {
+
 	for (int i = 1; i <= n; i++) {
 		scanf("%d", &inputTable[i]);
-	}
-}
-
-void initVisit(int n) {
-	for (int i = 1; i <= n; i++) {
 		visitTable[i] = 0;
 	}
+
+	solution = n;
 }
 
-void dfs(int goal, int current, int n) {
-
-
-	while (1) {
-
+int dfs(int current) {
+	
+	if (visitTable[current] == 1) {
+		return 0;
+	}
+	else if (cycleChecker[current] == 1) {
 		visitTable[current] = 1;
-		stt.push(current);
+		solution--;
 
-		if (goal == inputTable[current]) {
-			grouped = grouped + stt.size();
+		return current;
+	}
 
-			break;
-		}
+	cycleChecker[current] = 1;
+	int next = inputTable[current];
 
-		if (visitTable[inputTable[current]] == 0) {
-			current = inputTable[current];
+	int revalue = dfs(next);
+	if (revalue != 0) {
+		if (revalue == current) {
+			return 0;
 		}
 		else {
-			
-			int sttCurrent;
-			while (!stt.empty()) {
-				sttCurrent = stt.top();
-				stt.pop();
+			visitTable[current] = 1;
+			solution--;
 
-				visitTable[sttCurrent] = 0;
-			}
-
-			break;
+			return revalue;
 		}
-
 	}
-
-}
-
-void initStt() {
-	while (!stt.empty()) {
-		stt.pop();
+	else {
+		visitTable[current] = 1;
+		return 0;
 	}
 }
+
+void initChecker(int n) {
+	for (int i = 1; i <= n; i++) {
+		cycleChecker[i] = 0;
+	}
+}
+
 
 int main() {
 
 	int t;
 	scanf("%d", &t);
+
 	while (t--) {
 
 		int n;
 		scanf("%d", &n);
-		
-		init(n);
-		initVisit(n);
-		grouped = 0;
-		
-		for (int i = 1; i <= n; i++) {	
-			checkFlag = 0;
-			initStt();
 
-			dfs(i, i, n);
+		init(n);
+	
+		for (int i = 1; i <= n; i++) {
+			if (visitTable[i] == 0) {
+				initChecker(n);
+				dfs(i);
+			}
 		}
-		printf("%d\n", n - grouped);
+		
+		printf("%d\n", solution);
+	
 	}
+
 }
