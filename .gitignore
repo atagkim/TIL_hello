@@ -2,3 +2,5 @@ algorithm/*
 !algorithm/*.cpp
 !algorithm/*.c
 algorithm/test.cpp
+programing/multiThreadServer/*
+!programing/multiThreadServer/*.c
