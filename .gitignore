@@ -2,5 +2,8 @@ algorithm/*
 !algorithm/*.cpp
 !algorithm/*.c
 
-programing/multiThreadServer/*
-!programing/multiThreadServer/*.c
+programing/multiThreadServer/server/*
+!programing/multiThreadServer/server/*.c
+programing/multiThreadServer/client/*
+!programing/multiThreadServer/client/*.c
+
