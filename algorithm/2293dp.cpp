@@ -35,4 +35,5 @@ int main() {
 
 		dpTable[i] = countPossible(i, n);
 	}
+
 }
