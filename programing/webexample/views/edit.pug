@@ -1,0 +1,9 @@
+extends layout
+
+block content
+   form(action="/update/"+movies._id, method="POST")
+    label Title
+    input(type="text", name="title" value=movies.title)
+    label Date
+    input(type="text", name="date" value=movies.date)
+    button(type="submit") Submit

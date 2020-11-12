@@ -6,4 +6,15 @@ programing/multiThreadServer/server/*
 !programing/multiThreadServer/server/*.c
 programing/multiThreadServer/client/*
 !programing/multiThreadServer/client/*.c
+programing/webExample/*
+!programing/webExample/models
+!programing/webExample/public
+programing/webExample/public/images
+!programing/webExample/routes
+!programing/webExample/views
+!programing/webExample/*.js
+
+
+
+
 

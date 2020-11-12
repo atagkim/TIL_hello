@@ -1,0 +1,12 @@
+extends layout
+
+block content
+    h1= "Create Movie"
+    form(action="/movie/createmovie", method="POST")
+        label Title
+        input(type="text", name="title")
+        label Date
+        input(type="text", name="date")
+        label ImagePath
+        input(type="text", name="imagePath")
+        button(type="submit") Submit

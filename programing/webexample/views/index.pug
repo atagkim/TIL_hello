@@ -1,0 +1,10 @@
+extends layout
+
+block content
+  ul
+  each movie in movies
+    li
+      a(href='/edit/'+movie._id) #{movie.title}
+      a(href='/edit/' + movie._id) #{movie.date}
+      a(href='/delete/'+movie._id) 삭제
+      img(src=movie.imagePath width='300' height='400')
