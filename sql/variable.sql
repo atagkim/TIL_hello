@@ -5,9 +5,10 @@ SELECT
 FROM ANIMAL_OUTS
 WHERE @UNITHOUR < 23
 
-# 변수 초기화
+/*
+ 변수 초기화
 # SET @변수명 = a;
 
 # 변수 갱신
 # (@변수명 := b)
-
+*/
