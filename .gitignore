@@ -6,6 +6,7 @@ programing/multiThreadServer/server/*
 !programing/multiThreadServer/server/*.c
 programing/multiThreadServer/client/*
 !programing/multiThreadServer/client/*.c
+
 programing/webExample/*
 !programing/webExample/models
 !programing/webExample/public
@@ -14,6 +15,8 @@ programing/webExample/public/images
 !programing/webExample/views
 !programing/webExample/*.js
 
+programing/webExample2(advanced)/backend/node_modules
+programing/webExample2(advanced)/frontend/node_modules
 
 
 
