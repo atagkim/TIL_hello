@@ -1,81 +1,53 @@
 #include <string>
 #include <queue>
+#include <algorithm>
 
 using namespace std;
 
-struct unit {
+struct currentunit {
+
+    bool exist;
+    int id;
     int start;
-    int end;
+    int remain;
 };
+
+int timetable[510];
 
 struct cmp {
-    bool operator()(unit a, unit b) {
-        return a.end - a.start > b.end - b.start ? 1 : 0;
+    bool operator()(vector<int> a, vector<int> b) {
+        if (a[1] < b[1])
+            return 0;
+        else
+            return 1;
     }
 };
 
-bool sortcmp(vector<int> a, vector<int> b) {
+priority_queue<vector<int>, vector<vector<int>>, cmp> pq;
+queue<vector<int>> qqu;
 
-    return a[0] < b[0] ? 1 : 0;
+bool compare(vector<int> a, vector<int> b) {
+
+    if (a[0] > b[0])
+        return 0;
+    else
+        return 1;
 }
 
-
-priority_queue<unit, vector<unit>, cmp> pq;
-
 int solution(vector<vector<int>> jobs) {
-    int answer = 0, max = 0, min = 987654321;
-    int currentStatus = 0;
-    unit init, current;
+    int answer = 0;
 
-    vector<vector<int>> newjobs;
-    vector<int> init2;
-
-    for (int i = 0; i < jobs.size(); i++) {
-
-        if (jobs[i][0] > max) 
-            max = jobs[i][0];
-        if (jobs[i][0] < min)
-            min = jobs[i][0];
-    }
-
-    for (int i = 0; i <= max; i++) {
-        newjobs.push_back(init2);
-    }
-
-
-    sort(jobs.begin(), jobs.end(), sortcmp);
+    int currenttime = 0;
     
+    currentunit current;
+    current.exist = 0;
+
+    sort(jobs.begin(), jobs.end(), compare);
+
     for (int i = 0; i < jobs.size(); i++) {
-        newjobs[jobs[i][0]].push_back(jobs[i][1]);
-    }
-
-    for (int i = min; i <= max; i++) {
-        for (int j = 0; j < newjobs[i].size(); j++) {
-            init.start = i;
-            init.end = newjobs[i][j];
-
-            pq.push(init);
-        }
-
-        if (currentStatus == 0) {
-            currentStatus = 1;
-
-            current = pq.top();
-            pq.pop();
-        }
-
-        else {
-            current.start++;
-
-            if (current.end - current.start <= 0) {
-
-            }
-            else {
-
-            }
-        }
 
     }
+
 
     return answer;
 }
