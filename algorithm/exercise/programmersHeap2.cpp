@@ -39,20 +39,19 @@ void findpossible(vector<vector<int>> jobs) {
        
     int jobsnum = jobs.size();
 
-    while (jobsidx < jobsnum) {
+    for (int i = jobsidx; i < jobsnum; i++) {
+        
+        if (jobs[i][0] <= currenttime) {
+            jobs[i].push_back(i);
+            possible.push(jobs[i]);
 
-        if (jobs[jobsidx][0] <= currenttime) {
-
-            jobs[jobsidx].push_back(jobsidx);
-            possible.push(jobs[jobsidx]);
-
-            jobsidx++;
+            jobsidx = i + 1;
         }
-        else
+        else{
+            jobsidx = i;
             break;
+        }
     }
-
-    return;
 }
 
 int solution(vector<vector<int>> jobs) {
