@@ -27,7 +27,7 @@ int specialcmp(int a, int b) {
     }
 
     else {
-        
+
         if (aa.length() > bb.length()) {
             longer = aa;
             shorter = bb;
@@ -43,16 +43,17 @@ int specialcmp(int a, int b) {
 
         maxlength = longer.length();
 
-        while (1) {    
+        int idx = 1;
+        while (1) {
 
-            if (longer.length() == 0) {
+            if (shorter.length() == 0) {
                 return 0;
             }
 
             converted = longer.substr(0, shorter.length());
 
             whoislonger = strcmp(shorter.c_str(), converted.c_str());
- 
+
             if (whoislonger < 0) {
                 if (shorterid == 1)
                     return -1;
@@ -81,7 +82,7 @@ int specialcmp(int a, int b) {
                     longer = temp;
 
                 }
-          
+
             }
 
         }
@@ -91,12 +92,12 @@ int specialcmp(int a, int b) {
     return -100;
 
 }
- 
+
 bool numberscmp(int a, int b) {
 
     int checkvalue = specialcmp(a, b);
 
-    if (checkvalue == -1)
+    if (checkvalue == 1)
         return 1;
     else
         return 0;
@@ -108,16 +109,23 @@ string solution(vector<int> numbers) {
 
     sort(numbers.begin(), numbers.end(), numberscmp);
 
-    for (int i = 0; i < numbers.size(); i++) {
-        answer += to_string(numbers[i]);
+    if (numbers[0] == 0)
+        answer = '0';
+
+    else {
+        for (int i = 0; i < numbers.size(); i++) {
+            answer += to_string(numbers[i]);
+        }
     }
+    
 
     return answer;
 }
 
+
 int main() {
 
-    vector<int> numbers = {0,0,0,0,0};
+    vector<int> numbers = {222,22};
 
     string answer = solution(numbers);
 
