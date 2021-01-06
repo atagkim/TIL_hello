@@ -4,9 +4,17 @@
 
 using namespace std;
 
+
+// sort function in algorithm should be in strict weak ordering
+// don't make = and > on true together
+// if make = on true, > and < should be false!!
+
 bool compare(vector<int> a, vector<int> b) {
+
+	// if(a[0] >= b[0]) return 1;  =>  error!!!!!
 	if (a[0] > b[0])
 		return 1;
+	
 	else
 		return 0;
 }
