@@ -6,8 +6,7 @@ using namespace std;
 
 
 // sort function in algorithm should be in strict weak ordering
-// don't make = and > on true together
-// if make = on true, > and < should be false!!
+// don't make '=' and '>' on true together
 
 bool compare(vector<int> a, vector<int> b) {
 
