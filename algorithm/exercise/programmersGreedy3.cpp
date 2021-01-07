@@ -1,75 +1,75 @@
 #include <string>
 #include <vector>
-#include <algorithm>
 
 using namespace std;
 
-bool sortcmp(int a, int b) {
-    if (a > b)
-        return 1;
-    else
-        return 0;
-}
-
-int solution(vector<int> people, int limit) {
-    int answer = 0;
+string solution(string number, int k) {
+    string answer = "";
     
-    // init
-    vector<int> person_by_weight;
-    int current_person, remain;
-    int boatcount = 0, currentboatnum;
-    int personcount = 0, peoplesize = people.size();
+    
+    char current, next;
+    int length = number.length() - k;
+    int count;
 
-    sort(people.begin(), people.end(), sortcmp);
+    for (int i = 0; i < number.size(); i++) {
+       
+        current = number[i];
+        count = 1;
 
-    int max = people[0];
-    for (int i = 0; i <= max; i++) {    
-        person_by_weight.push_back(0);
-    }
-
-    for (int i = 0; i < people.size(); i++) {
-        current_person = people[i];
-        person_by_weight[current_person]++;
-    }
-
-
-    // boat count
-    for (int i = 0; i < people.size(); i++) {
-     
-        current_person = people[i];     
-        if (person_by_weight[current_person] <= 0)
+        if (k <= 0) {
+            answer += current;
             continue;
-        
-        person_by_weight[current_person]--;
-        personcount++;
-        remain = limit - current_person;
-
-        for (int i = remain; i > 0; i--) {
-            if (person_by_weight[i] > 0) {
-                person_by_weight[i]--;
-                personcount++;
-
-                break;
-            }
         }
 
-        boatcount++;
+        if (i != number.size() - 1) {
+           
+            for (int j = i + 1; j < number.size(); j++) {
 
-        if (personcount >= peoplesize)
-            break;
+                if (count > k) {
+                    answer += current;
+
+                    break;
+                }
+
+
+                // count Ã¤¿ì±â
+                next = number[j];
+
+                if (next > current) {
+                    i = j - 1;
+                    k -= count;
+
+                    break;
+                }
+                else {
+                    // keep
+                    count++;
+
+                    if (j == number.size() - 1)
+                        answer += current;
+                }
+            }
+
+        }
+        else {
+            answer += current;
+        }
+
     }
 
-  
-    answer = boatcount;
+    if (k > 0) {
+        answer = answer.substr(0, answer.length() - k);
+    }
+
     return answer;
 }
 
 int main() {
 
-    vector<int> people = { 70,50,80,50 };
-    int limit = 100;
+    string number = "1231234";
+    int k = 3;
 
-    int answer = solution(people, limit);
+    string answer = solution(number, k);
 
-    printf("answer = %d\n", answer);
+    printf("answer = %s\n", answer.c_str());
 }
